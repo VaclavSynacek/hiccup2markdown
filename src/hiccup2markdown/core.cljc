@@ -22,7 +22,7 @@
 (defn post-fn
   "After converting parts of markup to markdown, join using the strings"
   [n]
-  (string/join " " n))
+  (string/join "" n))
 
 (def walk-down
   "Process children of a tag with the two above functions recursively."
@@ -71,7 +71,7 @@
   [[tag attrs & children]]
   (case tag
         :p (p attrs children)
-        :div (p attrs children)
+        :div (ommit attrs children)
         :span (ommit attrs children)
         :blockquote (ommit attrs children) ;FIX ME
         :cite (ommit attrs children)       ;FIX ME
