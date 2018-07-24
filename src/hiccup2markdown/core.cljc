@@ -1,7 +1,6 @@
 (ns hiccup2markdown.core
   "Converts **normalized** hiccup datastructure to markdown."
-  (:require [clojure.string :as string]
-            [clojure.walk :as walk]))
+  (:require [clojure.walk :as walk]))
 
 
 ;; # General walking code
@@ -13,16 +12,16 @@
 (defn pre-fn
   "Process nodes in markup tree. If sequential, than it is a tag and should
   be somhow converted to markdown. Otherwise it is probbaly just some string
-  and shuld be left as is."
+  and should be left as is."
   [n]
   (if (sequential? n)
       (hiccup->markdown n)
       (identity n)))
 
 (defn post-fn
-  "After converting parts of markup to markdown, join using the strings"
+  "After converting parts of markup to markdown, join them"
   [n]
-  (string/join "" n))
+  (apply str n))
 
 (def walk-down
   "Process children of a tag with the two above functions recursively."
