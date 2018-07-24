@@ -8,7 +8,7 @@
 ;; Recursively processes the whole normalized hiccup tree. First converting
 ;; every node to text, then concatenating the results.
 
-(declare process-tag)
+(declare hiccup->markdown)
 
 (defn pre-fn
   "Process nodes in markup tree. If sequential, than it is a tag and should
@@ -16,7 +16,7 @@
   and shuld be left as is."
   [n]
   (if (sequential? n)
-      (process-tag n)
+      (hiccup->markdown n)
       (identity n)))
 
 (defn post-fn
@@ -67,7 +67,7 @@
   [attrs children]
   (walk-down children))
 
-(defn process-tag
+(defn hiccup->markdown
   [[tag attrs & children]]
   (case tag
         :p (p attrs children)

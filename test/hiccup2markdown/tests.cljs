@@ -1,11 +1,11 @@
 (ns hiccup2markdown.tests
   (:require [cljs.test :refer-macros [deftest is are testing run-tests]]
-            [hiccup2markdown.core :refer [process-tag]]))
+            [hiccup2markdown.core :refer [hiccup->markdown]]))
 
 
 
 (deftest examples
-  (are [hicc expected] (= (process-tag hicc) expected)
+  (are [hicc expected] (= (hiccup->markdown hicc) expected)
 
 ;; Notice the trailing space after bla and separate one space string between <a>
 ;; and <img>. If they are not there, they are not added automagically.
