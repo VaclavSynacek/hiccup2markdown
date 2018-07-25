@@ -7,7 +7,9 @@
 ;; Recursively processes the whole normalized hiccup tree. First converting
 ;; every node to text, then concatenating the results.
 
-(declare hiccup->markdown)
+(defmulti hiccup->markdown 
+  (fn [[tag attrs & children]] 
+       tag))
 
 (defn pre-fn
   "Process nodes in markup tree. If sequential, than it is a tag and should
@@ -29,68 +31,49 @@
 
 
 ;; # Specific html->markdown
-;; Logic to specifically convert individual html tags reprezented as normalized
+;; Logic to specifically convert individual html tags represented as normalized
 ;; hiccup datastructure to markdown.
 
-(defn p
-  [attrs children]
+(defmethod hiccup->markdown :p
+  [[tag attrs & children]]
   (str (walk-down children) "\n\n"))
 
-(defn em
-  [attrs children]
+(defmethod hiccup->markdown :em
+  [[tag attrs & children]]
   (str "*" (walk-down children) "*"))
 
-(defn s
-  [attrs children]
+(defmethod hiccup->markdown :s
+  [[tag attrs & children]]
   (str "~~" (walk-down children) "~~"))
 
-(defn strong
-  [attrs children]
+(defmethod hiccup->markdown :strong
+  [[tag attrs & children]]
   (str "**" (walk-down children) "**"))
 
-(defn a
-  [attrs children]
+(defmethod hiccup->markdown :a
+  [[tag attrs & children]]
   (str "(" (walk-down children) ")[" (:href attrs) "]"))
 
-(defn img
-  [attrs children]
+(defmethod hiccup->markdown :img
+  [[tag attrs & children]]
   (str "![" (:alt attrs) "](" (:src attrs) ")"))
 
-(defn hr
-  [attrs children]
+(defmethod hiccup->markdown :hr
+  [[tag attrs & children]]
   "\n---\n")
 
-(defn ommit
+(defmethod hiccup->markdown :default
+  [[tag attrs & children]]
   "For tags in source that should not throw, but should not be interpreted.
   They are basically ommited and forgotten. But their children are preserved."
-  [attrs children]
+  (println "WARNING: unhandled tag <" (name tag) "> in source.")
   (walk-down children))
 
-(defn hiccup->markdown
+(defmethod hiccup->markdown :script
   [[tag attrs & children]]
-  (case tag
-        :p (p attrs children)
-        :div (ommit attrs children)
-        :span (ommit attrs children)
-        :blockquote (ommit attrs children) ;FIX ME
-        :cite (ommit attrs children)       ;FIX ME
-        :iframe (ommit attrs children)       ;FIX ME
-        :small (ommit attrs children)       ;FIX ME
-        :ul (ommit attrs children)       ;FIX ME
-        :ol (ommit attrs children)       ;FIX ME
-        :li (ommit attrs children)       ;FIX ME
-        :script (ommit attrs children)       ;FIX ME
-        :del (ommit attrs children)       ;FIX ME
-        :br (ommit attrs children)
-        :object (ommit attrs children) ;FIX ME  
-        :param (ommit attrs children)  ;FIX ME
-        :embed (ommit attrs children)  ;FIX ME
-        :em (em attrs children)
-        :s (s attrs children)
-        :strong (strong attrs children)
-        :a (a attrs children)
-        :img (img attrs children)
-        :hr (hr attrs children)
-        (throw #?(:clj (Exception. (str "UNKNOWN TAG " tag))
-                  :cljs (js/Error. (str "UNKNOWN TAG " tag))))))
+  "To make <script> illegal in input, throw"
+   (throw #?(:clj (Exception. (str "<script> in input not allowed"))
+             :cljs (js/Error. (str "<script> in input not allowed")))))
+
+
 
