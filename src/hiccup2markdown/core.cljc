@@ -74,9 +74,21 @@
   [[tag attrs & children]]
   (str "* " (walk-down children)))
 
+(defmethod hiccup->markdown :h1
+  [[tag attrs & children]]
+  (str "# " (walk-down children) "\n\n"))
+
+(defmethod hiccup->markdown :h2
+  [[tag attrs & children]]
+  (str "## " (walk-down children) "\n\n"))
+
+(defmethod hiccup->markdown :h3
+  [[tag attrs & children]]
+  (str "### " (walk-down children) "\n\n"))
+
 (defmethod hiccup->markdown :blockquote
   [[tag attrs & children]]
-  (str "> " (walk-down children)))
+  (str "\n> " (walk-down children)))
 
 (defmethod hiccup->markdown :default
   [[tag attrs & children]]
