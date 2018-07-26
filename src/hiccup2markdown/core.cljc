@@ -62,18 +62,34 @@
   [[tag attrs & children]]
   "\n---\n")
 
+(defmethod hiccup->markdown :span
+  [[tag attrs & children]]
+  (walk-down children))
+
+(defmethod hiccup->markdown :ul
+  [[tag attrs & children]]
+  (walk-down children))
+
+(defmethod hiccup->markdown :li
+  [[tag attrs & children]]
+  (str "* " (walk-down children)))
+
+(defmethod hiccup->markdown :blockquote
+  [[tag attrs & children]]
+  (str "> " (walk-down children)))
+
 (defmethod hiccup->markdown :default
   [[tag attrs & children]]
   "For tags in source that should not throw, but should not be interpreted.
   They are basically ommited and forgotten. But their children are preserved."
-  (println "WARNING: unhandled tag <" (name tag) "> in source.")
+  (println "WARNING: unhandled tag <" tag "> in source.")
   (walk-down children))
 
-(defmethod hiccup->markdown :script
-  [[tag attrs & children]]
-  "To make <script> illegal in input, throw"
-   (throw #?(:clj (Exception. (str "<script> in input not allowed"))
-             :cljs (js/Error. (str "<script> in input not allowed")))))
+;(defmethod hiccup->markdown :script
+;  [[tag attrs & children]]
+;  "To make <script> illegal in input, throw"
+;   (throw #?(:clj (Exception. (str "<script> in input not allowed"))
+;             :cljs (js/Error. (str "<script> in input not allowed")))))
 
 
 
